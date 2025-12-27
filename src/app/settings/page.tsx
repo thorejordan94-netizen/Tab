@@ -64,15 +64,19 @@ export default function SettingsPage() {
   // API Key state
   const [openaiKey, setOpenaiKey] = useState('');
   const [anthropicKey, setAnthropicKey] = useState('');
+  const [geminiKey, setGeminiKey] = useState('');
   const [showOpenaiKey, setShowOpenaiKey] = useState(false);
   const [showAnthropicKey, setShowAnthropicKey] = useState(false);
+  const [showGeminiKey, setShowGeminiKey] = useState(false);
   const [hasOpenaiKey, setHasOpenaiKey] = useState(false);
   const [hasAnthropicKey, setHasAnthropicKey] = useState(false);
+  const [hasGeminiKey, setHasGeminiKey] = useState(false);
 
   // Load existing keys on mount
   useEffect(() => {
     setHasOpenaiKey(hasApiKey('openai'));
     setHasAnthropicKey(hasApiKey('anthropic'));
+    setHasGeminiKey(hasApiKey('gemini'));
   }, []);
 
   const handleSaveOpenaiKey = () => {
@@ -146,6 +150,34 @@ export default function SettingsPage() {
     toast({
       title: 'API key removed',
       description: 'Your Anthropic API key has been removed.',
+    });
+  };
+
+  const handleSaveGeminiKey = () => {
+    if (!geminiKey.trim()) {
+      toast({
+        title: 'API key required',
+        description: 'Please enter a Gemini API key.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    storeApiKey('gemini', geminiKey);
+    setHasGeminiKey(true);
+    setGeminiKey('');
+    toast({
+      title: 'API key saved',
+      description: 'Your Gemini API key has been saved locally.',
+    });
+  };
+
+  const handleRemoveGeminiKey = () => {
+    removeApiKey('gemini');
+    setHasGeminiKey(false);
+    toast({
+      title: 'API key removed',
+      description: 'Your Gemini API key has been removed.',
     });
   };
 
@@ -360,6 +392,61 @@ export default function SettingsPage() {
                   </a>
                 </p>
               </div>
+
+              {/* Gemini */}
+              <div className="space-y-3">
+                <Label>Gemini API Key</Label>
+                {hasGeminiKey ? (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 p-2 bg-muted rounded-md text-sm text-muted-foreground">
+                      AI••••••••••••••••
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRemoveGeminiKey}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        type={showGeminiKey ? 'text' : 'password'}
+                        value={geminiKey}
+                        onChange={(e) => setGeminiKey(e.target.value)}
+                        placeholder="AI..."
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        onClick={() => setShowGeminiKey(!showGeminiKey)}
+                      >
+                        {showGeminiKey ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                    <Button onClick={handleSaveGeminiKey}>
+                      <Save className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Get your API key from{' '}
+                  <a
+                    href="https://aistudio.google.com/apikey"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    aistudio.google.com
+                  </a>
+                </p>
+              </div>
             </CardContent>
           </Card>
 
@@ -378,7 +465,7 @@ export default function SettingsPage() {
                   value={settings.defaultProvider}
                   onValueChange={(v) =>
                     settings.updateSettings({
-                      defaultProvider: v as 'openai' | 'anthropic',
+                      defaultProvider: v as 'openai' | 'anthropic' | 'gemini',
                     })
                   }
                 >
@@ -388,6 +475,7 @@ export default function SettingsPage() {
                   <SelectContent>
                     <SelectItem value="openai">OpenAI</SelectItem>
                     <SelectItem value="anthropic">Anthropic</SelectItem>
+                    <SelectItem value="gemini">Google Gemini</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -411,6 +499,9 @@ export default function SettingsPage() {
                     </SelectItem>
                     <SelectItem value="claude-sonnet-4-20250514">
                       Claude Sonnet 4
+                    </SelectItem>
+                    <SelectItem value="gemini-2.0-flash">
+                      Gemini 2.0 Flash (fast)
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -438,6 +529,12 @@ export default function SettingsPage() {
                     </SelectItem>
                     <SelectItem value="claude-opus-4-20250514">
                       Claude Opus 4
+                    </SelectItem>
+                    <SelectItem value="gemini-2.0-flash">
+                      Gemini 2.0 Flash
+                    </SelectItem>
+                    <SelectItem value="gemini-2.5-pro-preview-06-05">
+                      Gemini 2.5 Pro
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -625,8 +722,10 @@ export default function SettingsPage() {
                         settings.resetSettings();
                         removeApiKey('openai');
                         removeApiKey('anthropic');
+                        removeApiKey('gemini');
                         setHasOpenaiKey(false);
                         setHasAnthropicKey(false);
+                        setHasGeminiKey(false);
                         toast({
                           title: 'Settings reset',
                           description: 'All settings have been reset to defaults.',

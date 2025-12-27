@@ -486,7 +486,7 @@ export default function BuilderPage() {
                       <Select
                         value={advancedOptions.aiProvider}
                         onValueChange={(v) =>
-                          setAdvancedOptions({ aiProvider: v as 'openai' | 'anthropic' })
+                          setAdvancedOptions({ aiProvider: v as 'openai' | 'anthropic' | 'gemini' })
                         }
                       >
                         <SelectTrigger className="mt-1">
@@ -495,6 +495,7 @@ export default function BuilderPage() {
                         <SelectContent>
                           <SelectItem value="openai">OpenAI</SelectItem>
                           <SelectItem value="anthropic">Anthropic</SelectItem>
+                          <SelectItem value="gemini">Google Gemini</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

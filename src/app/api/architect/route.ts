@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import {
   PROMPT_ARCHITECT_SYSTEM,
   buildArchitectUserMessage,
@@ -65,6 +66,8 @@ export async function POST(request: NextRequest) {
 
     if (aiProvider === 'anthropic') {
       outputPrompt = await callAnthropic(userMessage, apiKey);
+    } else if (aiProvider === 'gemini') {
+      outputPrompt = await callGemini(userMessage, apiKey);
     } else {
       outputPrompt = await callOpenAI(userMessage, apiKey);
     }
@@ -158,4 +161,28 @@ async function callAnthropic(userMessage: string, apiKey?: string): Promise<stri
   }
 
   return content.text;
+}
+
+async function callGemini(userMessage: string, apiKey?: string): Promise<string> {
+  const key = apiKey || process.env.GEMINI_API_KEY;
+
+  if (!key) {
+    throw new Error('Gemini API key is required');
+  }
+
+  const genAI = new GoogleGenerativeAI(key);
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash',
+    systemInstruction: PROMPT_ARCHITECT_SYSTEM,
+  });
+
+  const result = await model.generateContent(userMessage);
+  const response = result.response;
+  const content = response.text();
+
+  if (!content) {
+    throw new Error('No response from Gemini');
+  }
+
+  return content;
 }

@@ -221,7 +221,7 @@ export async function resetSettings(): Promise<void> {
  * Store API key securely in localStorage
  * Note: For true security, consider using the Web Crypto API for encryption
  */
-export function storeApiKey(provider: 'openai' | 'anthropic', key: string): void {
+export function storeApiKey(provider: 'openai' | 'anthropic' | 'gemini', key: string): void {
   if (typeof window === 'undefined') return;
 
   // Basic obfuscation (not encryption, but better than plain text)
@@ -232,7 +232,7 @@ export function storeApiKey(provider: 'openai' | 'anthropic', key: string): void
 /**
  * Retrieve API key
  */
-export function getApiKey(provider: 'openai' | 'anthropic'): string | null {
+export function getApiKey(provider: 'openai' | 'anthropic' | 'gemini'): string | null {
   if (typeof window === 'undefined') return null;
 
   const encoded = localStorage.getItem(`ef_${provider}_key`);
@@ -248,7 +248,7 @@ export function getApiKey(provider: 'openai' | 'anthropic'): string | null {
 /**
  * Remove API key
  */
-export function removeApiKey(provider: 'openai' | 'anthropic'): void {
+export function removeApiKey(provider: 'openai' | 'anthropic' | 'gemini'): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(`ef_${provider}_key`);
 }
@@ -256,7 +256,7 @@ export function removeApiKey(provider: 'openai' | 'anthropic'): void {
 /**
  * Check if an API key is stored
  */
-export function hasApiKey(provider: 'openai' | 'anthropic'): boolean {
+export function hasApiKey(provider: 'openai' | 'anthropic' | 'gemini'): boolean {
   return getApiKey(provider) !== null;
 }
 

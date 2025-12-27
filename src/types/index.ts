@@ -1,6 +1,6 @@
 // Core types for Extension Foundry
 
-export type AIProvider = 'openai' | 'anthropic';
+export type AIProvider = 'openai' | 'anthropic' | 'gemini';
 export type StylingChoice = 'tailwind' | 'css-modules' | 'plain-css';
 export type TargetBrowser = 'chrome' | 'edge' | 'firefox';
 export type BuilderStep = 'input' | 'architect' | 'build' | 'complete';
